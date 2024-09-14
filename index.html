@@ -3,81 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toggleable Character Counter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Modern Character Counter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --accent-color: #ff6347; /* Tomato red */
+            --secondary-color: #f0f0f0;
+            --hover-color: #ff7f50; /* Coral */
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
         body, html {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Roboto', sans-serif;
             height: 100%;
-            background-color: #ffffff;
-            color: #212529;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
         }
+
         .container {
             display: flex;
             flex-direction: column;
             height: 100%;
-            padding: 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
         }
+
         #text-input, #text-display {
             flex-grow: 1;
             width: 100%;
-            padding: 1rem;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: 'Inter', sans-serif;
-            margin-bottom: 1rem;
+            padding: 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-family: 'Roboto', sans-serif;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         #text-input {
-            resize: none;
+            resize: vertical;
+            min-height: 200px;
         }
+
+        #text-input:focus {
+            outline: none;
+        }
+
         #text-display {
             overflow-y: auto;
             display: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
-        #text-input:focus {
-            outline: none;
-            border-color: #4dabf7;
-        }
+
         .footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem 0;
+            padding: 1rem 0;
         }
+
         .button {
-            padding: 8px 16px;
+            padding: 12px 24px;
             font-size: 16px;
-            color: #495057;
-            background-color: #e9ecef;
+            color: white;
+            background-color: var(--accent-color);
             border: none;
-            border-radius: 4px;
+            border-radius: 30px;
             cursor: pointer;
-            transition: background-color 0.3s;
-            margin-right: 10px;
+            transition: all 0.3s ease;
+            margin-right: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
         .button:hover {
-            background-color: #dee2e6;
+            background-color: var(--hover-color);
         }
+
         #count-info {
-            font-size: 16px;
-            color: #6c757d;
+            font-size: 18px;
+            color: var(--text-color);
+            font-weight: 400;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .button {
+                margin-bottom: 1rem;
+                width: 100%;
+            }
+
+            #count-info {
+                text-align: center;
+                margin-top: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <textarea id="text-input" placeholder="Type or paste your text here..." aria-label="Text input area"></textarea>
+        <textarea id="text-input" placeholder="Start typing..." aria-label="Text input area"></textarea>
         <div id="text-display"></div>
         <div class="footer">
             <div>
                 <button id="clear-btn" class="button">Clear</button>
-                <button id="toggle-btn" class="button">Switch to Text</button>
+                <button id="toggle-btn" class="button">View</button>
             </div>
             <div id="count-info">0 words | 0 characters</div>
         </div>
@@ -108,15 +160,13 @@
                 textInput.style.display = 'block';
                 textDisplay.style.display = 'none';
                 clearBtn.style.display = 'inline-block';
-                countInfo.style.display = 'block';
-                toggleBtn.textContent = 'Switch to Text';
+                toggleBtn.textContent = 'View';
             } else {
                 textInput.style.display = 'none';
                 textDisplay.style.display = 'block';
                 textDisplay.textContent = textInput.value;
                 clearBtn.style.display = 'none';
-                countInfo.style.display = 'none';
-                toggleBtn.textContent = 'Switch to Edit';
+                toggleBtn.textContent = 'Edit';
             }
         }
 
