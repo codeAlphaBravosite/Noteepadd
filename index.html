@@ -25,6 +25,7 @@
             height: 100%;
             background-color: var(--bg-color);
             color: var(--text-color);
+            overflow: hidden;
         }
 
         .container {
@@ -33,7 +34,7 @@
             height: 100%;
             max-width: 800px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1rem;
             position: relative;
         }
 
@@ -70,7 +71,7 @@
             letter-spacing: 0.05em;
         }
 
-        #text-input, #text-display {
+        #text-input {
             flex-grow: 1;
             width: 100%;
             padding: 1.5rem;
@@ -83,18 +84,12 @@
             border-radius: 12px;
             transition: all 0.3s ease;
             box-shadow: var(--shadow);
+            min-height: 50vh; /* Minimum height for a comfortable writing experience */
         }
 
         #text-input:focus {
             outline: none;
             box-shadow: var(--shadow);
-        }
-
-        #text-display {
-            display: none;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
         }
 
         .footer {
@@ -104,7 +99,8 @@
             position: sticky;
             bottom: 0;
             background-color: var(--bg-color);
-            padding: 1rem 0;
+            padding: 0.5rem 0;
+            z-index: 10; /* Ensure the footer stays on top */
         }
 
         .button {
@@ -135,28 +131,15 @@
             text-decoration: underline;
         }
 
-        .fade-transition {
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        .fade-out {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        .fade-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
         @media (max-width: 600px) {
             .container {
-                padding: 1rem;
+                padding: 0.5rem;
             }
 
-            #text-input, #text-display {
-                font-size: 16px;
+            #text-input {
+                font-size: 1rem;
                 padding: 1rem;
+                min-height: 60vh; /* Adjust for more space on mobile */
             }
 
             .button {
@@ -191,8 +174,7 @@
                 <span class="count-label">Chars</span>
             </div>
         </div>
-        <textarea id="text-input" placeholder="Start typing..." aria-label="Text input area" class="fade-transition fade-in"></textarea>
-        <div id="text-display" class="fade-transition fade-out"></div>
+        <textarea id="text-input" placeholder="Start typing..." aria-label="Text input area"></textarea>
         <div class="footer">
             <button id="clear-btn" class="button">Clear</button>
             <button id="toggle-btn" class="button">View</button>
@@ -201,7 +183,6 @@
 
     <script>
         const textInput = document.getElementById('text-input');
-        const textDisplay = document.getElementById('text-display');
         const wordCount = document.getElementById('word-count');
         const charCount = document.getElementById('char-count');
         const countInfo = document.getElementById('count-info');
@@ -225,41 +206,39 @@
         function toggleMode() {
             isTextboxMode = !isTextboxMode;
             if (isTextboxMode) {
-                fadeTransition(textDisplay, textInput);
-                clearBtn.style.display = 'block';
-                toggleBtn.textContent = 'View';
-                countInfo.style.display = 'flex';
-                // Focus text area to show keyboard on mobile
                 textInput.focus();
+                toggleBtn.textContent = 'View';
+                clearBtn.style.display = 'inline-block';
+                countInfo.style.display = 'flex';
             } else {
-                textDisplay.textContent = textInput.value;
-                fadeTransition(textInput, textDisplay);
-                clearBtn.style.display = 'none';
+                textInput.blur();  // Hide the keyboard on mobile when viewing text
                 toggleBtn.textContent = 'Edit';
+                clearBtn.style.display = 'none';
                 countInfo.style.display = 'none';
-                // Blur the text input to hide keyboard on mobile
-                textInput.blur();
-                // Scroll back to the top of the page to ensure visibility of buttons
-                window.scrollTo(0, 0);
             }
-        }
-
-        function fadeTransition(elementOut, elementIn) {
-            elementOut.classList.add('fade-out');
-            elementOut.classList.remove('fade-in');
-            setTimeout(() => {
-                elementOut.style.display = 'none';
-                elementIn.style.display = 'block';
-                setTimeout(() => {
-                    elementIn.classList.add('fade-in');
-                    elementIn.classList.remove('fade-out');
-                }, 50);
-            }, 300);
         }
 
         textInput.addEventListener('input', updateCounts);
         clearBtn.addEventListener('click', () => {
             textInput.value = '';
             updateCounts();
-            textInput.focus
-            
+            textInput.focus();
+        });
+        toggleBtn.addEventListener('click', toggleMode);
+        updateCounts();
+
+        // Optional: Auto-save content in localStorage
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('savedText', textInput.value);
+        });
+
+        window.addEventListener('load', () => {
+            const savedText = localStorage.getItem('savedText');
+            if (savedText) {
+                textInput.value = savedText;
+                updateCounts();
+            }
+        });
+    </script>
+</body>
+</html>
