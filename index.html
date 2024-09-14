@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smooth Character Counter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refined Note Counter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f5f5f5;
+            --bg-color: #ffffff;
             --text-color: #333333;
-            --accent-color: #CC0000;
-            --secondary-color: #ffffff;
-            --hover-color: #990000;
+            --accent-color: #6c5ce7;
+            --light-gray: #f5f6fa;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -21,63 +21,77 @@
         }
 
         body, html {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Poppins', sans-serif;
             height: 100%;
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.6;
-            overflow: hidden;
         }
 
         .container {
             display: flex;
             flex-direction: column;
             height: 100%;
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 1rem;
+            padding: 2rem;
         }
 
         #count-info {
-            font-size: 14px;
-            color: var(--text-color);
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
         }
 
-        .text-area-container {
-            flex-grow: 1;
+        .count-item {
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            align-items: center;
+            margin-left: 1rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background-color: var(--light-gray);
+            transition: all 0.3s ease;
+        }
+
+        .count-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .count-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         #text-input, #text-display {
             flex-grow: 1;
             width: 100%;
-            padding: 1rem;
+            padding: 1.5rem;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-        }
-
-        #text-input {
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
             resize: none;
+            margin-bottom: 1.5rem;
+            background-color: var(--light-gray);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
         }
 
         #text-input:focus {
             outline: none;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow);
         }
 
         #text-display {
             display: none;
+            overflow-y: auto;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
@@ -86,51 +100,94 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 0;
         }
 
         .button {
-            padding: 10px 20px;
-            font-size: 14px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
             color: white;
             background-color: var(--accent-color);
             border: none;
-            border-radius: 20px;
+            border-radius: 25px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            font-weight: 600;
         }
 
         .button:hover {
-            background-color: var(--hover-color);
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        #clear-btn {
+            background-color: transparent;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+
+        #clear-btn:hover {
+            text-decoration: underline;
+        }
+
+        .fade-transition {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         @media (max-width: 600px) {
             .container {
-                padding: 0.5rem;
+                padding: 1rem;
             }
 
-            .footer {
-                flex-direction: row;
-                justify-content: space-between;
+            #text-input, #text-display {
+                font-size: 16px;
+                padding: 1rem;
             }
 
             .button {
-                padding: 8px 16px;
-                font-size: 12px;
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .count-item {
+                padding: 0.3rem;
+                margin-left: 0.5rem;
+            }
+
+            .count-value {
+                font-size: 1rem;
+            }
+
+            .count-label {
+                font-size: 0.6rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="count-info">0 words | 0 characters</div>
-        <div class="text-area-container">
-            <textarea id="text-input" placeholder="Start typing..." aria-label="Text input area"></textarea>
-            <div id="text-display"></div>
+        <div id="count-info">
+            <div class="count-item">
+                <span id="word-count" class="count-value">0</span>
+                <span class="count-label">Words</span>
+            </div>
+            <div class="count-item">
+                <span id="char-count" class="count-value">0</span>
+                <span class="count-label">Chars</span>
+            </div>
         </div>
+        <textarea id="text-input" placeholder="Start typing..." aria-label="Text input area" class="fade-transition fade-in"></textarea>
+        <div id="text-display" class="fade-transition fade-out"></div>
         <div class="footer">
             <button id="clear-btn" class="button">Clear</button>
             <button id="toggle-btn" class="button">View</button>
@@ -140,6 +197,8 @@
     <script>
         const textInput = document.getElementById('text-input');
         const textDisplay = document.getElementById('text-display');
+        const wordCount = document.getElementById('word-count');
+        const charCount = document.getElementById('char-count');
         const countInfo = document.getElementById('count-info');
         const clearBtn = document.getElementById('clear-btn');
         const toggleBtn = document.getElementById('toggle-btn');
@@ -151,56 +210,50 @@
 
         function updateCounts() {
             const text = textInput.value;
-            const wordCount = countWords(text);
-            const charCount = [...text].length;
-            countInfo.textContent = `${wordCount} words | ${charCount} characters`;
+            const words = countWords(text);
+            const chars = text.length;
+            wordCount.textContent = words;
+            charCount.textContent = chars;
+            countInfo.style.opacity = text.length > 0 ? '1' : '0.7';
         }
 
         function toggleMode() {
             isTextboxMode = !isTextboxMode;
             if (isTextboxMode) {
-                textInput.style.display = 'block';
-                textDisplay.style.display = 'none';
-                countInfo.style.display = 'block';
+                fadeTransition(textDisplay, textInput);
+                clearBtn.style.display = 'block';
                 toggleBtn.textContent = 'View';
+                countInfo.style.display = 'flex';
             } else {
-                textInput.style.display = 'none';
-                textDisplay.style.display = 'block';
                 textDisplay.textContent = textInput.value;
-                countInfo.style.display = 'none';
+                fadeTransition(textInput, textDisplay);
+                clearBtn.style.display = 'none';
                 toggleBtn.textContent = 'Edit';
+                countInfo.style.display = 'none';
             }
         }
 
-        textInput.addEventListener('input', updateCounts);
+        function fadeTransition(elementOut, elementIn) {
+            elementOut.classList.add('fade-out');
+            elementOut.classList.remove('fade-in');
+            setTimeout(() => {
+                elementOut.style.display = 'none';
+                elementIn.style.display = 'block';
+                setTimeout(() => {
+                    elementIn.classList.add('fade-in');
+                    elementIn.classList.remove('fade-out');
+                }, 50);
+            }, 300);
+        }
 
+        textInput.addEventListener('input', updateCounts);
         clearBtn.addEventListener('click', () => {
             textInput.value = '';
             updateCounts();
+            textInput.focus();
         });
-
         toggleBtn.addEventListener('click', toggleMode);
-
-        // Prevent body scrolling on mobile
-        document.body.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-        }, { passive: false });
-
-        // Allow scrolling within the textarea
-        textInput.addEventListener('touchmove', function(e) {
-            e.stopPropagation();
-        });
-
         updateCounts();
-
-        // Adjust viewport height for mobile browsers
-        function adjustViewportHeight() {
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        }
-
-        window.addEventListener('resize', adjustViewportHeight);
-        adjustViewportHeight();
     </script>
 </body>
 </html>
