@@ -9,7 +9,7 @@
         :root {
             --bg-color: #ffffff;
             --text-color: #333333;
-            --accent-color: #cc0000;
+            --accent-color: #6c5ce7;
             --light-gray: #f5f6fa;
             --shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
@@ -34,6 +34,7 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
+            position: relative;
         }
 
         #count-info {
@@ -100,6 +101,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            bottom: 0;
+            background-color: var(--bg-color);
+            padding: 1rem 0;
         }
 
         .button {
@@ -203,7 +208,6 @@
         const clearBtn = document.getElementById('clear-btn');
         const toggleBtn = document.getElementById('toggle-btn');
         let isTextboxMode = true;
-        let updateTimer;
 
         function countWords(text) {
             return text.trim().split(/\s+/).filter(word => word.length > 0).length;
@@ -218,11 +222,6 @@
             countInfo.style.opacity = text.length > 0 ? '1' : '0.7';
         }
 
-        function debouncedUpdate() {
-            clearTimeout(updateTimer);
-            updateTimer = setTimeout(updateCounts, 20);
-        }
-
         function toggleMode() {
             isTextboxMode = !isTextboxMode;
             if (isTextboxMode) {
@@ -230,12 +229,18 @@
                 clearBtn.style.display = 'block';
                 toggleBtn.textContent = 'View';
                 countInfo.style.display = 'flex';
+                // Focus text area to show keyboard on mobile
+                textInput.focus();
             } else {
                 textDisplay.textContent = textInput.value;
                 fadeTransition(textInput, textDisplay);
                 clearBtn.style.display = 'none';
                 toggleBtn.textContent = 'Edit';
                 countInfo.style.display = 'none';
+                // Blur the text input to hide keyboard on mobile
+                textInput.blur();
+                // Scroll back to the top of the page to ensure visibility of buttons
+                window.scrollTo(0, 0);
             }
         }
 
@@ -252,14 +257,9 @@
             }, 300);
         }
 
-        textInput.addEventListener('input', debouncedUpdate);
+        textInput.addEventListener('input', updateCounts);
         clearBtn.addEventListener('click', () => {
             textInput.value = '';
             updateCounts();
-            textInput.focus();
-        });
-        toggleBtn.addEventListener('click', toggleMode);
-        updateCounts();
-    </script>
-</body>
-</html>
+            textInput.focus
+            
