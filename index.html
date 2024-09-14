@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refined Note Counter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>NoteePadd</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #ffffff;
             --text-color: #333333;
-            --accent-color: #6c5ce7;
+            --accent-color: #cc0000;
             --light-gray: #f5f6fa;
             --shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
@@ -75,7 +75,7 @@
             padding: 1.5rem;
             border: none;
             font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Roboto', sans-serif;
             resize: none;
             margin-bottom: 1.5rem;
             background-color: var(--light-gray);
@@ -254,6 +254,44 @@
         });
         toggleBtn.addEventListener('click', toggleMode);
         updateCounts();
+
+        // Optional: Auto-save content in localStorage
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('savedText', textInput.value);
+        });
+
+        window.addEventListener('load', () => {
+            const savedText = localStorage.getItem('savedText');
+            if (savedText) {
+                textInput.value = savedText;
+                updateCounts();
+            }
+        });
+
+        function handleResize() {
+            adjustTextareaHeight();
+            if (window.innerHeight < 500) {
+                document.body.style.height = 'auto';
+                document.documentElement.style.height = 'auto';
+            } else {
+                document.body.style.height = '100%';
+                document.documentElement.style.height = '100%';
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        function scrollToInput()  {
+            setTimeout(() => {
+                textInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        textInput.addEventListener('focus', scrollToInput);
+
+        handleResize();
+        adjustTextareaHeight();
+        updateCounts();  
     </script>
 </body>
 </html>
