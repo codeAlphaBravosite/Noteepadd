@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Character Counter</title>
+    <title>Accessible Character Counter</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -23,7 +23,7 @@
             height: 100%;
             padding: 1rem;
         }
-        textarea {
+        #text-input {
             flex-grow: 1;
             width: 100%;
             padding: 1rem;
@@ -35,7 +35,7 @@
             margin-bottom: 1rem;
             transition: border-color 0.3s;
         }
-        textarea:focus {
+        #text-input:focus {
             outline: none;
             border-color: #4dabf7;
         }
@@ -66,10 +66,10 @@
 </head>
 <body>
     <div class="container">
-        <textarea id="text-input" placeholder="Type or paste your text here..."></textarea>
+        <textarea id="text-input" placeholder="Type or paste your text here..." aria-label="Text input area" aria-describedby="count-info"></textarea>
         <div class="footer">
-            <button id="clear-btn">Clear</button>
-            <div id="count-info">0 words | 0 characters</div>
+            <button id="clear-btn" aria-label="Clear text">Clear</button>
+            <div id="count-info" aria-live="polite">0 words | 0 characters</div>
         </div>
     </div>
 
@@ -94,6 +94,7 @@
         clearBtn.addEventListener('click', () => {
             textInput.value = '';
             updateCounts();
+            textInput.focus();
         });
 
         updateCounts();
