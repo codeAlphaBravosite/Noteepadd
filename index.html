@@ -9,7 +9,7 @@
         :root {
             --bg-color: #ffffff;
             --text-color: #333333;
-            --accent-color: #6c5ce7;
+            --accent-color: #cc0000;
             --light-gray: #f5f6fa;
             --shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
@@ -203,6 +203,7 @@
         const clearBtn = document.getElementById('clear-btn');
         const toggleBtn = document.getElementById('toggle-btn');
         let isTextboxMode = true;
+        let updateTimer;
 
         function countWords(text) {
             return text.trim().split(/\s+/).filter(word => word.length > 0).length;
@@ -215,6 +216,11 @@
             wordCount.textContent = words;
             charCount.textContent = chars;
             countInfo.style.opacity = text.length > 0 ? '1' : '0.7';
+        }
+
+        function debouncedUpdate() {
+            clearTimeout(updateTimer);
+            updateTimer = setTimeout(updateCounts, 100);
         }
 
         function toggleMode() {
@@ -246,7 +252,7 @@
             }, 300);
         }
 
-        textInput.addEventListener('input', updateCounts);
+        textInput.addEventListener('input', debouncedUpdate);
         clearBtn.addEventListener('click', () => {
             textInput.value = '';
             updateCounts();
