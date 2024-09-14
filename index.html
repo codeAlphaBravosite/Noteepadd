@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoteePadd - Optimized for Large Texts</title>
+    <title>NoteePadd - Optimized with Duration Estimate</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -193,6 +193,10 @@
     <div class="container">
         <div id="count-info">
             <div class="count-item">
+                <span id="second-count" class="count-value">0</span>
+                <span class="count-label">Seconds</span>
+            </div>
+            <div class="count-item">
                 <span id="word-count" class="count-value">0</span>
                 <span class="count-label">Words</span>
             </div>
@@ -213,6 +217,7 @@
     <script>
         const textInput = document.getElementById('text-input');
         const textDisplay = document.getElementById('text-display');
+        const secondCount = document.getElementById('second-count');
         const wordCount = document.getElementById('word-count');
         const charCount = document.getElementById('char-count');
         const countInfo = document.getElementById('count-info');
@@ -230,11 +235,17 @@
                     return text.trim().split(/\\s+/).filter(word => word.length > 0).length;
                 }
 
+                function calculateSeconds(chars) {
+                    // 980 characters for 58 seconds
+                    return Math.round((chars / 980) * 58);
+                }
+
                 self.onmessage = function(e) {
                     const text = e.data;
                     const words = countWords(text);
                     const chars = text.length;
-                    self.postMessage({words, chars});
+                    const seconds = calculateSeconds(chars);
+                    self.postMessage({words, chars, seconds});
                 }
             `;
 
@@ -242,6 +253,7 @@
             worker = new Worker(URL.createObjectURL(blob));
 
             worker.onmessage = function(e) {
+                secondCount.textContent = e.data.seconds;
                 wordCount.textContent = e.data.words;
                 charCount.textContent = e.data.chars;
                 loadingIndicator.style.display = 'none';
