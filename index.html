@@ -267,31 +267,6 @@
                 updateCounts();
             }
         });
-
-        function handleResize() {
-            adjustTextareaHeight();
-            if (window.innerHeight < 500) {
-                document.body.style.height = 'auto';
-                document.documentElement.style.height = 'auto';
-            } else {
-                document.body.style.height = '100%';
-                document.documentElement.style.height = '100%';
-            }
-        }
-
-        window.addEventListener('resize', handleResize);
-
-        function scrollToInput()  {
-            setTimeout(() => {
-                textInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
-        }
-
-        textInput.addEventListener('focus', scrollToInput);
-
-        handleResize();
-        adjustTextareaHeight();
-        updateCounts();  
     </script>
 </body>
 </html>
