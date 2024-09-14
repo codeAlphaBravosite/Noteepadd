@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Counter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body, html {
+            font-family: 'Inter', sans-serif;
+            height: 100%;
+            background-color: #ffffff;
+            color: #212529;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 1rem;
+        }
+        textarea {
+            flex-grow: 1;
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            resize: none;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #4dabf7;
+        }
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+        #clear-btn {
+            padding: 8px 16px;
+            font-size: 16px;
+            color: #495057;
+            background-color: #e9ecef;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #clear-btn:hover {
+            background-color: #dee2e6;
+        }
+        #count-info {
+            font-size: 16px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <textarea id="text-input" placeholder="Type or paste your text here..."></textarea>
+        <div class="footer">
+            <button id="clear-btn">Clear</button>
+            <div id="count-info">0 words | 0 characters</div>
+        </div>
+    </div>
+
+    <script>
+        const textInput = document.getElementById('text-input');
+        const countInfo = document.getElementById('count-info');
+        const clearBtn = document.getElementById('clear-btn');
+
+        function countWords(text) {
+            return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+        }
+
+        function updateCounts() {
+            const text = textInput.value;
+            const wordCount = countWords(text);
+            const charCount = [...text].length;
+            countInfo.textContent = `${wordCount} words | ${charCount} characters`;
+        }
+
+        textInput.addEventListener('input', updateCounts);
+
+        clearBtn.addEventListener('click', () => {
+            textInput.value = '';
+            updateCounts();
+        });
+
+        updateCounts();
+    </script>
+</body>
+</html>
