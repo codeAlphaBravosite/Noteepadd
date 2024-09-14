@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accessible Character Counter</title>
+    <title>Toggleable Character Counter</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -23,17 +23,22 @@
             height: 100%;
             padding: 1rem;
         }
-        #text-input {
+        #text-input, #text-display {
             flex-grow: 1;
             width: 100%;
             padding: 1rem;
             border: 1px solid #e9ecef;
             border-radius: 8px;
-            resize: none;
             font-size: 16px;
             font-family: 'Inter', sans-serif;
             margin-bottom: 1rem;
-            transition: border-color 0.3s;
+        }
+        #text-input {
+            resize: none;
+        }
+        #text-display {
+            overflow-y: auto;
+            display: none;
         }
         #text-input:focus {
             outline: none;
@@ -45,7 +50,7 @@
             align-items: center;
             padding: 0.5rem 0;
         }
-        #clear-btn {
+        .button {
             padding: 8px 16px;
             font-size: 16px;
             color: #495057;
@@ -54,8 +59,9 @@
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin-right: 10px;
         }
-        #clear-btn:hover {
+        .button:hover {
             background-color: #dee2e6;
         }
         #count-info {
@@ -66,17 +72,24 @@
 </head>
 <body>
     <div class="container">
-        <textarea id="text-input" placeholder="Type or paste your text here..." aria-label="Text input area" aria-describedby="count-info"></textarea>
+        <textarea id="text-input" placeholder="Type or paste your text here..." aria-label="Text input area"></textarea>
+        <div id="text-display"></div>
         <div class="footer">
-            <button id="clear-btn" aria-label="Clear text">Clear</button>
-            <div id="count-info" aria-live="polite">0 words | 0 characters</div>
+            <div>
+                <button id="clear-btn" class="button">Clear</button>
+                <button id="toggle-btn" class="button">Switch to Text</button>
+            </div>
+            <div id="count-info">0 words | 0 characters</div>
         </div>
     </div>
 
     <script>
         const textInput = document.getElementById('text-input');
+        const textDisplay = document.getElementById('text-display');
         const countInfo = document.getElementById('count-info');
         const clearBtn = document.getElementById('clear-btn');
+        const toggleBtn = document.getElementById('toggle-btn');
+        let isTextboxMode = true;
 
         function countWords(text) {
             return text.trim().split(/\s+/).filter(word => word.length > 0).length;
@@ -89,13 +102,32 @@
             countInfo.textContent = `${wordCount} words | ${charCount} characters`;
         }
 
+        function toggleMode() {
+            isTextboxMode = !isTextboxMode;
+            if (isTextboxMode) {
+                textInput.style.display = 'block';
+                textDisplay.style.display = 'none';
+                clearBtn.style.display = 'inline-block';
+                countInfo.style.display = 'block';
+                toggleBtn.textContent = 'Switch to Text';
+            } else {
+                textInput.style.display = 'none';
+                textDisplay.style.display = 'block';
+                textDisplay.textContent = textInput.value;
+                clearBtn.style.display = 'none';
+                countInfo.style.display = 'none';
+                toggleBtn.textContent = 'Switch to Edit';
+            }
+        }
+
         textInput.addEventListener('input', updateCounts);
 
         clearBtn.addEventListener('click', () => {
             textInput.value = '';
             updateCounts();
-            textInput.focus();
         });
+
+        toggleBtn.addEventListener('click', toggleMode);
 
         updateCounts();
     </script>
