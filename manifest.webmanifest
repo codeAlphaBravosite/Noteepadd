@@ -1,11 +1,11 @@
 {
-  "name": "NoteePadd",
-  "short_name": "NoteePadd",
-  "description": "A simple note-taking app",
+  "name": "NotePad",
+  "short_name": "NotePad",
+  "description": "A powerful note-taking app",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#cc0000",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "icon-192x192.png",
