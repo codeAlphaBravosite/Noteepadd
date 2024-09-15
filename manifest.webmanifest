@@ -2,7 +2,7 @@
   "name": "NoteePadd",
   "short_name": "NoteePadd",
   "description": "A simple note-taking app",
-  "start_url": "/index.html",
+  "start_url": "/Noteepadd",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#cc0000",
