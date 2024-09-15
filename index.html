@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NoteePadd</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#cc0000">
+<link rel="apple-touch-icon" href="icon-192x192.png">
+    
     <style>
         :root {
             --bg-color: #ffffff;
@@ -188,10 +193,6 @@
             }
         }
     </style>
-
-    <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#cc0000">
-<link rel="apple-touch-icon" href="icon-192x192.png">
    
 </head>
 <body>
@@ -345,13 +346,15 @@
 
     <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then((reg) => console.log('Service worker registered.', reg))
-        .catch((err) => console.log('Service worker registration failed:', err));
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('./service-worker.js').then(function(registration) {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }, function(err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
     });
   }
-</script>
+    </script>
     
 </body>
 </html>
