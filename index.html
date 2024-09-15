@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NoteePadd</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="icon" href="icon-192x192.png" type="image/png">
 <link rel="shortcut icon" href="icon-192x192.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192x192.png">
+
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#cc0000">
+    
     <style>
         :root {
             --bg-color: #ffffff;
@@ -340,5 +345,17 @@
             }, 1000);
         });
     </script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+        .then(function(registration) {
+          console.log('Service Worker registered with scope:', registration.scope);
+        }).catch(function(error) {
+          console.log('Service Worker registration failed:', error);
+        });
+      }
+    </script>
+    
 </body>
 </html>
