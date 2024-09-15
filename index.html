@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteePadd</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --accent-color: #cc0000;
+            --light-gray: #f5f6fa;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            font-family: 'Roboto', sans-serif;
+            height: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-width: 800px;
+            margin: 10px auto;
+            padding: 2rem;
+        }
+
+        #count-info {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .count-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-left: 1rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background-color: var(--light-gray);
+            transition: all 0.3s ease;
+        }
+
+        .count-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .count-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        #text-input, #text-display {
+            flex-grow: 1;
+            width: 100%;
+            padding: 1.5rem;
+            border: none;
+            font-size: 1rem;
+            font-family: 'Roboto', sans-serif;
+            margin-bottom: 1.5rem;
+            background-color: var(--light-gray);
+            border-radius: 12px;
+            resize: none;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            height: 70vh;
+        }
+        
+        #text-input:focus {
+            outline: none;
+            box-shadow: var(--shadow);
+        }
+
+        #text-display {
+            display: none;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .button {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            color: white;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        #clear-btn {
+            background-color: transparent;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+
+        #clear-btn:hover {
+            text-decoration: underline;
+        }
+
+        .fade-transition {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            #text-input, #text-display {
+                font-size: 16px;
+                padding: 1rem;
+            }
+
+            .button {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .count-item {
+                padding: 0.3rem;
+                margin-left: 0.5rem;
+            }
+
+            .count-value {
+                font-size: 1rem;
+            }
+
+            .count-label {
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="count-info">
+            <div class="count-item">
+                <span id="second-count" class="count-value">0</span>
+                <span class="count-label">Seconds</span>
+            </div>
+            <div class="count-item">
+                <span id="word-count" class="count-value">0</span>
+                <span class="count-label">Words</span>
+            </div>
+            <div class="count-item">
+                <span id="char-count" class="count-value">0</span>
+                <span class="count-label">Chars</span>
+            </div>
+        </div>
+        <textarea id="text-input" placeholder="Start typing..." aria-label="Text input area" class="fade-transition fade-in"></textarea>
+        <div id="text-display" class="fade-transition fade-out"></div>
+        <div class="footer">
+            <button id="clear-btn" class="button">Clear</button>
+            <button id="toggle-btn" class="button">View</button>
+        </div>
+        <div id="loading-indicator">Processing...</div>
+    </div>
+
+    <script>
+        const textInput = document.getElementById('text-input');
+        const textDisplay = document.getElementById('text-display');
+        const secondCount = document.getElementById('second-count');
+        const wordCount = document.getElementById('word-count');
+        const charCount = document.getElementById('char-count');
+        const countInfo = document.getElementById('count-info');
+        const clearBtn = document.getElementById('clear-btn');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        let isTextboxMode = true;
+        let debounceTimer;
+        let worker;
+
+        // Initialize Web Worker
+        function initWorker() {
+            const workerCode = `
+                function countWords(text) {
+                    return text.trim().split(/\\s+/).filter(word => word.length > 0).length;
+                }
+
+                function calculateSeconds(chars) {
+                    // 980 characters for 58 seconds
+                    return Math.round((chars / 980) * 57);
+                }
+
+                self.onmessage = function(e) {
+                    const text = e.data;
+                    const words = countWords(text);
+                    const chars = text.length;
+                    const seconds = calculateSeconds(chars);
+                    self.postMessage({words, chars, seconds});
+                }
+            `;
+
+            const blob = new Blob([workerCode], {type: 'application/javascript'});
+            worker = new Worker(URL.createObjectURL(blob));
+
+            worker.onmessage = function(e) {
+                secondCount.textContent = e.data.seconds;
+                wordCount.textContent = e.data.words;
+                charCount.textContent = e.data.chars;
+                loadingIndicator.style.display = 'none';
+                countInfo.style.opacity = textInput.value.length > 0 ? '1' : '0.7';
+            };
+        }
+
+        function updateCounts() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                loadingIndicator.style.display = 'block';
+                worker.postMessage(textInput.value);
+            }, 300);
+        }
+
+        function toggleMode() {
+            isTextboxMode = !isTextboxMode;
+            if (isTextboxMode) {
+                fadeTransition(textDisplay, textInput);
+                clearBtn.style.display = 'block';
+                toggleBtn.textContent = 'View';
+                countInfo.style.display = 'flex';
+            } else {
+                requestAnimationFrame(() => {
+                    textDisplay.textContent = textInput.value;
+                    fadeTransition(textInput, textDisplay);
+                    clearBtn.style.display = 'none';
+                    toggleBtn.textContent = 'Edit';
+                    countInfo.style.display = 'none';
+                });
+            }
+        }
+
+        function fadeTransition(elementOut, elementIn) {
+            elementOut.classList.add('fade-out');
+            elementOut.classList.remove('fade-in');
+            setTimeout(() => {
+                elementOut.style.display = 'none';
+                elementIn.style.display = 'block';
+                requestAnimationFrame(() => {
+                    elementIn.classList.add('fade-in');
+                    elementIn.classList.remove('fade-out');
+                });
+            }, 300);
+        }
+
+        textInput.addEventListener('input', updateCounts);
+        clearBtn.addEventListener('click', () => {
+            textInput.value = '';
+            updateCounts();
+            textInput.focus();
+        });
+        toggleBtn.addEventListener('click', toggleMode);
+
+        // Efficient scroll syncing
+        textInput.addEventListener('scroll', () => {
+            if (!isTextboxMode) return;
+            const scrollPercentage = textInput.scrollTop / (textInput.scrollHeight - textInput.clientHeight);
+            textDisplay.scrollTop = scrollPercentage * (textDisplay.scrollHeight - textDisplay.clientHeight);
+        });
+
+        // Initialize
+        initWorker();
+        updateCounts();
+
+        // Load saved content
+        window.addEventListener('load', () => {
+            const savedText = localStorage.getItem('savedText');
+            if (savedText) {
+                textInput.value = savedText;
+                updateCounts();
+            }
+        });
+
+        // Efficient auto-save
+        let autoSaveTimer;
+        textInput.addEventListener('input', () => {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                localStorage.setItem('savedText', textInput.value);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
