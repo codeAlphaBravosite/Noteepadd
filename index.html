@@ -7,8 +7,8 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="icon" href="icon-192x192.png" type="image/png">
-<link rel="shortcut icon" href="icon-192x192.png" type="image/png">
-<link rel="apple-touch-icon" href="icon-192x192.png">
+    <link rel="shortcut icon" href="icon-192x192.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
 
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#cc0000">
@@ -212,6 +212,10 @@
                 <span id="char-count" class="count-value">0</span>
                 <span class="count-label">Chars</span>
             </div>
+            <div class="count-item">
+                <span id="char-without-spaces-count" class="count-value">0</span>
+                <span class="count-label">Chars (no spaces)</span>
+            </div>
         </div>
         <textarea id="text-input" placeholder="Start typing..." aria-label="Text input area" class="fade-transition fade-in"></textarea>
         <div id="text-display" class="fade-transition fade-out"></div>
@@ -228,6 +232,7 @@
         const secondCount = document.getElementById('second-count');
         const wordCount = document.getElementById('word-count');
         const charCount = document.getElementById('char-count');
+        const charWithoutSpacesCount = document.getElementById('char-without-spaces-count');
         const countInfo = document.getElementById('count-info');
         const clearBtn = document.getElementById('clear-btn');
         const toggleBtn = document.getElementById('toggle-btn');
@@ -239,21 +244,67 @@
         // Initialize Web Worker
         function initWorker() {
             const workerCode = `
-                function countWords(text) {
-                    return text.trim().split(/\\s+/).filter(word => word.length > 0).length;
+                // Helper function to determine if a character is a word break
+                function isWordBreak(char) {
+                    return /[\\s\\u0964\\u0965]/.test(char);
                 }
 
-                function calculateSeconds(chars) {
-                    // 980 characters for 58 seconds
-                    return Math.round((chars / 980) * 57);
+                // Helper function to determine if a character is a Hindi vowel sign or virama
+                function isHindiVowelSignOrVirama(char) {
+                    return /[\\u093E-\\u094C\\u094D]/.test(char);
+                }
+
+                function countWordsAndCharacters(text) {
+                    let wordCount = 0;
+                    let charCount = 0;
+                    let charCountWithoutSpaces = 0;
+                    let inWord = false;
+                    let prevChar = '';
+
+                    for (let i = 0; i < text.length; i++) {
+                        const char = text[i];
+                        
+                        // Count characters
+                        charCount++;
+                        if (!isWordBreak(char)) {
+                            charCountWithoutSpaces++;
+                        }
+
+                        // Word counting logic
+                        if (isWordBreak(char)) {
+                            if (inWord) {
+                                wordCount++;
+                                inWord = false;
+                            }
+                        } else {
+                            // Handle Hindi conjuncts and vowel signs
+                            if (i > 0 && isHindiVowelSignOrVirama(prevChar) && !isHindiVowelSignOrVirama(char)) {
+                                // Don't start a new word for conjuncts
+                            } else {
+                                inWord = true;
+                            }
+                        }
+
+                        prevChar = char;
+                    }
+
+                    // Count the last word if the text doesn't end with a word break
+                    if (inWord) {
+                        wordCount++;
+                    }
+
+                    return {
+                        words: wordCount,
+                        characters: charCount,
+                        charactersWithoutSpaces: charCountWithoutSpaces
+                    };
                 }
 
                 self.onmessage = function(e) {
                     const text = e.data;
-                    const words = countWords(text);
-                    const chars = text.length;
-                    const seconds = calculateSeconds(chars);
-                    self.postMessage({words, chars, seconds});
+                    const {words, characters, charactersWithoutSpaces} = countWordsAndCharacters(text);
+                    const seconds = Math.round((characters / 980) * 57);
+                    self.postMessage({words, chars: characters, charsWithoutSpaces: charactersWithoutSpaces, seconds});
                 }
             `;
 
@@ -264,6 +315,7 @@
                 secondCount.textContent = e.data.seconds;
                 wordCount.textContent = e.data.words;
                 charCount.textContent = e.data.chars;
+                charWithoutSpacesCount.textContent = e.data.charsWithoutSpaces;
                 loadingIndicator.style.display = 'none';
                 countInfo.style.opacity = textInput.value.length > 0 ? '1' : '0.7';
             };
