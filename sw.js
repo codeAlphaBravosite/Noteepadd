@@ -1,13 +1,12 @@
-const VERSION = '1.0.2';
+const VERSION = '1.0.4';
 const CACHE_NAME = `noteepadd-cache-${VERSION}`;
-const BASE_URL = '/Noteepadd';
 
 const STATIC_CACHE_URLS = [
-  `${BASE_URL}/`,
-  `${BASE_URL}/index.html`,
-  `${BASE_URL}/icon-192x192.png`,
-  `${BASE_URL}/icon-512x512.png`,
-  `${BASE_URL}/offline.html`,
+  './',
+  './index.html',
+  './icon-192x192.png',
+  './icon-512x512.png',
+  './offline.html',
   // Add other static resources
 ];
 
@@ -34,36 +33,31 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  const request = event.request;
-  
-  // Check if the request is for a page in our app
-  if (request.url.startsWith(self.location.origin + BASE_URL)) {
-    event.respondWith(
-      caches.match(request)
-        .then(response => {
-          if (response) {
-            return response;
-          }
-          return fetch(request).then(
-            fetchResponse => {
-              if(!fetchResponse || fetchResponse.status !== 200 || fetchResponse.type !== 'basic') {
-                return fetchResponse;
-              }
-              const responseToCache = fetchResponse.clone();
-              caches.open(CACHE_NAME)
-                .then(cache => cache.put(request, responseToCache));
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request).then(
+          fetchResponse => {
+            if(!fetchResponse || fetchResponse.status !== 200 || fetchResponse.type !== 'basic') {
               return fetchResponse;
             }
-          );
-        })
-        .catch(() => {
-          // Fallback to offline page if it's a navigation request
-          if (request.mode === 'navigate') {
-            return caches.match(`${BASE_URL}/offline.html`);
+            const responseToCache = fetchResponse.clone();
+            caches.open(CACHE_NAME)
+              .then(cache => cache.put(event.request, responseToCache));
+            return fetchResponse;
           }
-        })
-    );
-  }
+        );
+      })
+      .catch(() => {
+        // Fallback to offline page if it's a navigation request
+        if (event.request.mode === 'navigate') {
+          return caches.match('./offline.html');
+        }
+      })
+  );
 });
 
 // Background Sync (if needed)
