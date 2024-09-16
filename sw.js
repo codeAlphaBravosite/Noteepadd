@@ -1,9 +1,9 @@
 const CACHE_NAME = 'noteepadd-cache-v1';
 const urlsToCache = [
-  './',
-  './index.html',
-  './icon-192x192.png',
-  './icon-512x512.png'
+  '/',
+  '/index.html',
+  '/icon-192x192.png',
+  '/icon-512x512.png'
 ];
 
 // Install the service worker
