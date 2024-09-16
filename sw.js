@@ -1,4 +1,4 @@
-const VERSION = '1.0.4';
+const VERSION = '1.0.5';
 const CACHE_NAME = `noteepadd-cache-${VERSION}`;
 
 const STATIC_CACHE_URLS = [
@@ -6,7 +6,6 @@ const STATIC_CACHE_URLS = [
   './index.html',
   './icon-192x192.png',
   './icon-512x512.png',
-  './offline.html',
   // Add other static resources
 ];
 
@@ -54,7 +53,7 @@ self.addEventListener('fetch', event => {
       .catch(() => {
         // Fallback to offline page if it's a navigation request
         if (event.request.mode === 'navigate') {
-          return caches.match('./offline.html');
+          return caches.match('./index.html');
         }
       })
   );
