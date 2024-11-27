@@ -1,5 +1,5 @@
-const VERSION = '1.0.5';
-const CACHE_NAME = `noteepadd-cache-${VERSION}`;
+const VERSION = '1.0.9';
+const CACHE_NAME = `notepad-cache-${VERSION}`;
 
 const STATIC_CACHE_URLS = [
   './',
@@ -22,7 +22,7 @@ self.addEventListener('activate', event => {
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheName.startsWith('noteepadd-cache-') && cacheName !== CACHE_NAME) {
+          if (cacheName.startsWith('notepad-cache-') && cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })
