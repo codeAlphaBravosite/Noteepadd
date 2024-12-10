@@ -1,4 +1,4 @@
-const VERSION = '1.0.9';
+const VERSION = '1.1.0';
 const CACHE_NAME = `notepad-cache-${VERSION}`;
 
 const STATIC_CACHE_URLS = [
