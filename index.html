@@ -267,8 +267,6 @@
     }
 `;
 
-// Replace the existing worker initialization code with:
-function initWorker() {
     const blob = new Blob([workerCode], {type: 'application/javascript'});
     worker = new Worker(URL.createObjectURL(blob));
 
