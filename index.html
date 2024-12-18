@@ -239,36 +239,47 @@
         // Initialize Web Worker
         function initWorker() {
             const workerCode = `
-                function countWords(text) {
-                    return text.trim().split(/\\s+/).filter(word => word.length > 0).length;
-                }
+    function countWords(text) {
+        return text.trim().split(/\\s+/).filter(word => word.length > 0).length;
+    }
 
-                function calculateSeconds(chars) {
-                    // 990 characters for 60 seconds
-                    return Math.round((chars / 999) * 58);
-                }
-
-                self.onmessage = function(e) {
-                    const text = e.data;
-                    const words = countWords(text);
-                    const chars = text.length;
-                    const seconds = calculateSeconds(chars);
-                    self.postMessage({words, chars, seconds});
-                }
-            `;
-
-            const blob = new Blob([workerCode], {type: 'application/javascript'});
-            worker = new Worker(URL.createObjectURL(blob));
-
-            worker.onmessage = function(e) {
-                secondCount.textContent = e.data.seconds;
-                wordCount.textContent = e.data.words;
-                charCount.textContent = e.data.chars;
-                loadingIndicator.style.display = 'none';
-                countInfo.style.opacity = textInput.value.length > 0 ? '1' : '0.7';
-            };
+    function formatTime(totalSeconds) {
+        if (totalSeconds < 60) {
+            return totalSeconds.toString();
         }
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return \`\${minutes}:\${seconds.toString().padStart(2, '0')}\`;
+    }
 
+    function calculateSeconds(chars) {
+        // 990 characters for 60 seconds
+        return Math.round((chars / 999) * 58);
+    }
+
+    self.onmessage = function(e) {
+        const text = e.data;
+        const words = countWords(text);
+        const chars = text.length;
+        const totalSeconds = calculateSeconds(chars);
+        const formattedTime = formatTime(totalSeconds);
+        self.postMessage({words, chars, seconds: formattedTime});
+    }
+`;
+
+// Replace the existing worker initialization code with:
+function initWorker() {
+    const blob = new Blob([workerCode], {type: 'application/javascript'});
+    worker = new Worker(URL.createObjectURL(blob));
+
+    worker.onmessage = function(e) {
+        secondCount.textContent = e.data.seconds;
+        wordCount.textContent = e.data.words;
+        charCount.textContent = e.data.chars;
+        loadingIndicator.style.display = 'none';
+        countInfo.style.opacity = textInput.value.length > 0 ? '1' : '0.7';
+    };
+}
         function updateCounts() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
