@@ -7,8 +7,8 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="icon" href="./icon-192x192.png" type="image/png">
-<link rel="shortcut icon" href="./icon-192x192.png" type="image/png">
-<link rel="apple-touch-icon" href="./icon-192x192.png">
+    <link rel="shortcut icon" href="./icon-192x192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./icon-192x192.png">
 
     <link rel="manifest" href="./manifest.webmanifest">
     <meta name="theme-color" content="#cc0000">
@@ -202,7 +202,7 @@
         <div id="count-info">
             <div class="count-item">
                 <span id="second-count" class="count-value">0</span>
-                <span class="count-label">Seconds</span>
+                <span class="count-label">Time</span>
             </div>
             <div class="count-item">
                 <span id="word-count" class="count-value">0</span>
@@ -239,45 +239,46 @@
         // Initialize Web Worker
         function initWorker() {
             const workerCode = `
-    function countWords(text) {
-        return text.trim().split(/\\s+/).filter(word => word.length > 0).length;
-    }
+                function countWords(text) {
+                    return text.trim().split(/\\s+/).filter(word => word.length > 0).length;
+                }
 
-    function formatTime(totalSeconds) {
-        if (totalSeconds < 60) {
-            return totalSeconds.toString();
+                function formatTime(totalSeconds) {
+                    if (totalSeconds < 60) {
+                        return totalSeconds.toString();
+                    }
+                    const minutes = Math.floor(totalSeconds / 60);
+                    const seconds = totalSeconds % 60;
+                    return \`\${minutes}:\${seconds.toString().padStart(2, '0')}\`;
+                }
+
+                function calculateSeconds(chars) {
+                    // 990 characters for 60 seconds
+                    return Math.round((chars / 999) * 58);
+                }
+
+                self.onmessage = function(e) {
+                    const text = e.data;
+                    const words = countWords(text);
+                    const chars = text.length;
+                    const totalSeconds = calculateSeconds(chars);
+                    const formattedTime = formatTime(totalSeconds);
+                    self.postMessage({words, chars, seconds: formattedTime});
+                }
+            `;
+
+            const blob = new Blob([workerCode], {type: 'application/javascript'});
+            worker = new Worker(URL.createObjectURL(blob));
+
+            worker.onmessage = function(e) {
+                secondCount.textContent = e.data.seconds;
+                wordCount.textContent = e.data.words;
+                charCount.textContent = e.data.chars;
+                loadingIndicator.style.display = 'none';
+                countInfo.style.opacity = textInput.value.length > 0 ? '1' : '0.7';
+            };
         }
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        return \`\${minutes}:\${seconds.toString().padStart(2, '0')}\`;
-    }
 
-    function calculateSeconds(chars) {
-        // 990 characters for 60 seconds
-        return Math.round((chars / 999) * 58);
-    }
-
-    self.onmessage = function(e) {
-        const text = e.data;
-        const words = countWords(text);
-        const chars = text.length;
-        const totalSeconds = calculateSeconds(chars);
-        const formattedTime = formatTime(totalSeconds);
-        self.postMessage({words, chars, seconds: formattedTime});
-    }
-`;
-
-    const blob = new Blob([workerCode], {type: 'application/javascript'});
-    worker = new Worker(URL.createObjectURL(blob));
-
-    worker.onmessage = function(e) {
-        secondCount.textContent = e.data.seconds;
-        wordCount.textContent = e.data.words;
-        charCount.textContent = e.data.chars;
-        loadingIndicator.style.display = 'none';
-        countInfo.style.opacity = textInput.value.length > 0 ? '1' : '0.7';
-    };
-}
         function updateCounts() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
@@ -356,17 +357,17 @@
     </script>
 
     <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(registration => {
-          console.log('Service Worker registered successfully:', registration.scope);
-        })
-        .catch(error => {
-          console.log('Service Worker registration failed:', error);
-        });
-    });
-  }
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered successfully:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
     </script>
     
 </body>
